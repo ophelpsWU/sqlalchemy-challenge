@@ -14,7 +14,7 @@ from flask import Flask, jsonify
 #################################################
 # Database Setup
 #################################################
-engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+engine = create_engine("sqlite:///../Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
@@ -116,7 +116,7 @@ def tobs():
 
     return jsonify(ret_val)
 
-def dateSearch(start,end):
+def date_search(start,end):
     session = Session(engine)
     
     # Get the top station
@@ -132,16 +132,16 @@ def dateSearch(start,end):
     
     
 @app.route("/api/v1.0/<start>")
-def startDate(start):
+def start_date(start):
 
     #run the dateSearch with today as the end time
-    return dateSearch(start,dt.date.today())
+    return date_search(start,dt.date.today())
 
 @app.route("/api/v1.0/<start>/<end>")
-def startEndDate(start,end):
+def start_end_date(start,end):
 
     #run the dateSearch with today as the end time
-    return dateSearch(start,end)
+    return date_search(start,end)
 
 
 if __name__ == '__main__':
