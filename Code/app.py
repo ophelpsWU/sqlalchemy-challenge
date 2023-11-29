@@ -22,12 +22,12 @@ Base = automap_base()
 Base.prepare(autoload_with=engine)
 
 # Save reference to the tables
-tbl_measurement=Base.classes.measurement
-tbl_station=Base.classes.station
+measurement=Base.classes.measurement
+station=Base.classes.station
 
 # Set the min and max dates to variables
 session = Session(engine)
-date_max = session.query(tbl_measurement.date).order_by(tbl_measurement.date.desc())[0][0]
+date_max = session.query(measurement.date).order_by(measurement.date.desc())[0][0]
 session.close()
 
 date_array = date_max.split('-')
@@ -71,7 +71,7 @@ def prcp():
     session = Session(engine)
 
     """Return precipitation data"""
-    query_prcp = session.query(tbl_measurement.date,tbl_measurement.prcp).filter(tbl_measurement.date.between(date_min,date_max)).filter(tbl_measurement.prcp.isnot(None)).all()
+    query_prcp = session.query(measurement.date,measurement.prcp).filter(measurement.date.between(date_min,date_max)).filter(measurement.prcp.isnot(None)).all()
 
     #close the session
     session.close()
@@ -90,7 +90,7 @@ def stations():
     val_list=[]
 
     """Return precipitation data"""
-    station_list =  session.query(tbl_station).all()
+    station_list =  session.query(station).all()
     
     #close the session
     session.close()
@@ -108,7 +108,7 @@ def tobs():
     session = Session(engine)
 
     # Query tobs data for the most frequent station
-    query_tobs = session.query(tbl_measurement.date,tbl_measurement.tobs).filter(tbl_measurement.station=='USC00519281').filter(tbl_measurement.date.between(date_min,date_max)).all()
+    query_tobs = session.query(measurement.date,measurement.tobs).filter(measurement.station=='USC00519281').filter(measurement.date.between(date_min,date_max)).all()
 
     session.close()
 
@@ -120,12 +120,12 @@ def date_search(start,end):
     session = Session(engine)
     
     # Get the top station
-    top_station=session.query(tbl_measurement.station,func.count(tbl_measurement.station)).group_by(tbl_measurement.station).order_by(func.count(tbl_measurement.station).desc()).all()[0][0]
+    top_station=session.query(measurement.station,func.count(measurement.station)).group_by(measurement.station).order_by(func.count(measurement.station).desc()).all()[0][0]
     
     # Query tobs data for the most frequent station
-    min_temp = session.query(func.min(tbl_measurement.tobs)).filter(tbl_measurement.station==top_station).filter(tbl_measurement.date.between(start,end))[0][0]
-    max_temp = session.query(func.max(tbl_measurement.tobs)).filter(tbl_measurement.station==top_station).filter(tbl_measurement.date.between(start,end))[0][0]
-    avg_temp = session.query(func.avg(tbl_measurement.tobs)).filter(tbl_measurement.station==top_station).filter(tbl_measurement.date.between(start,end))[0][0]
+    min_temp = session.query(func.min(measurement.tobs)).filter(measurement.station==top_station).filter(measurement.date.between(start,end))[0][0]
+    max_temp = session.query(func.max(measurement.tobs)).filter(measurement.station==top_station).filter(measurement.date.between(start,end))[0][0]
+    avg_temp = session.query(func.avg(measurement.tobs)).filter(measurement.station==top_station).filter(measurement.date.between(start,end))[0][0]
     ret_dict={"minimum temperature":min_temp,"maximum temperature":max_temp,"average temperature":avg_temp}
     
     return jsonify(ret_dict)
